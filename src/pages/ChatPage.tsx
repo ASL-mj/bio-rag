@@ -13,7 +13,6 @@ import {
   Select,
   Spin,
   Empty,
-  Collapse,
   Tag,
   Popover,
   Dropdown,
@@ -714,139 +713,47 @@ export const ChatPage: React.FC = () => {
 
     return (
       <div>
-        {/* 执行过程 - 节点式展示 */}
-        {hasIterations && (
+        {/* 执行过程 - 仅显示当前步骤 */}
+        {hasIterations && msg.isStreaming && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-              {msg.isStreaming && <Spin size="small" />}
-              <Text type="secondary" strong style={{ fontSize: 13 }}>
-                🔍 执行过程
-              </Text>
-            </div>
-            
-            <Space direction="vertical" style={{ width: '100%' }} size={12}>
-              {msg.iterations!.map((iter, idx) => (
-                <div key={idx} style={{ position: 'relative' }}>
-                  {/* 迭代标题 */}
-                  <div style={{ 
-                    marginBottom: 8, 
-                    paddingLeft: 12,
-                    borderLeft: '3px solid #1890ff',
-                    fontSize: 12,
-                    color: '#8c8c8c',
-                    fontWeight: 500,
-                  }}>
-                    第 {iter.iteration} 轮迭代
-                  </div>
-
-                  {/* 思考节点 */}
-                  {iter.thought && (
-                    <Card
-                      size="small"
-                      style={{
-                        marginBottom: 8,
-                        background: '#fffbe6',
-                        border: '1px solid #ffe58f',
-                      }}
-                      bodyStyle={{ padding: '10px 12px' }}
-                    >
-                      <Space direction="vertical" style={{ width: '100%' }} size={4}>
-                        <Space>
-                          <BulbOutlined style={{ color: '#faad14', fontSize: 16 }} />
-                          <Text strong style={{ fontSize: 13, color: '#d48806' }}>
-                            💭 思考
-                          </Text>
-                        </Space>
-                        <div style={{
-                          fontSize: 13,
-                          color: '#595959',
-                          whiteSpace: 'pre-wrap',
-                          wordBreak: 'break-word',
-                          lineHeight: 1.6,
-                        }}>
-                          {iter.thought}
-                        </div>
-                      </Space>
-                    </Card>
-                  )}
-
-                  {/* 工具调用节点 */}
-                  {iter.action && (
-                    <Card
-                      size="small"
-                      style={{
-                        marginBottom: 8,
-                        background: '#e6f7ff',
-                        border: '1px solid #91d5ff',
-                      }}
-                      bodyStyle={{ padding: '10px 12px' }}
-                    >
-                      <Space direction="vertical" style={{ width: '100%' }} size={4}>
-                        <Space>
-                          <ThunderboltOutlined style={{ color: '#1890ff', fontSize: 16 }} />
-                          <Text strong style={{ fontSize: 13, color: '#096dd9' }}>
-                            🔧 调用工具
-                          </Text>
-                        </Space>
-                        <div>
-                          <Tag color="blue" style={{ fontSize: 12 }}>
-                            {iter.action}
-                          </Tag>
-                        </div>
-                        {iter.action_input && (
-                          <div style={{
-                            fontSize: 12,
-                            color: '#595959',
-                            background: '#f0f5ff',
-                            padding: '6px 10px',
-                            borderRadius: 4,
-                            whiteSpace: 'pre-wrap',
-                            wordBreak: 'break-word',
-                            fontFamily: 'Consolas, Monaco, "Courier New", monospace',
-                            lineHeight: 1.5,
-                          }}>
-                            {iter.action_input}
-                          </div>
-                        )}
-                      </Space>
-                    </Card>
-                  )}
-
-                  {/* 观察结果节点 */}
-                  {iter.observation && (
-                    <Card
-                      size="small"
-                      style={{
-                        marginBottom: 8,
-                        background: '#f6ffed',
-                        border: '1px solid #b7eb8f',
-                      }}
-                      bodyStyle={{ padding: '10px 12px' }}
-                    >
-                      <Space direction="vertical" style={{ width: '100%' }} size={4}>
-                        <Space>
-                          <EyeOutlined style={{ color: '#52c41a', fontSize: 16 }} />
-                          <Text strong style={{ fontSize: 13, color: '#389e0d' }}>
-                            📊 观察结果
-                          </Text>
-                        </Space>
-                        <div style={{
-                          fontSize: 13,
-                          color: '#595959',
-                          whiteSpace: 'pre-wrap',
-                          wordBreak: 'break-word',
-                          lineHeight: 1.6,
-                          maxHeight: 200,
-                          overflow: 'auto',
-                        }}>
-                          {iter.observation}
-                        </div>
-                      </Space>
-                    </Card>
-                  )}
-                </div>
-              ))}
-            </Space>
+            <Card
+              size="small"
+              style={{
+                background: '#f0f5ff',
+                border: '1px solid #adc6ff',
+              }}
+              bodyStyle={{ padding: '10px 14px' }}
+            >
+              <Space size={8} align="center">
+                <Spin size="small" />
+                <Text type="secondary" style={{ fontSize: 13 }}>
+                  🔍 正在执行:
+                </Text>
+                {(() => {
+                  const currentIter = msg.iterations![msg.iterations!.length - 1];
+                  if (currentIter.observation) {
+                    return (
+                      <Tag icon={<EyeOutlined />} color="green" style={{ fontSize: 12, margin: 0 }}>
+                        完成 - {currentIter.action || '处理中'}
+                      </Tag>
+                    );
+                  } else if (currentIter.action) {
+                    return (
+                      <Tag icon={<ThunderboltOutlined />} color="blue" style={{ fontSize: 12, margin: 0 }}>
+                        {currentIter.action}
+                      </Tag>
+                    );
+                  } else if (currentIter.thought) {
+                    return (
+                      <Tag icon={<BulbOutlined />} color="gold" style={{ fontSize: 12, margin: 0 }}>
+                        思考中
+                      </Tag>
+                    );
+                  }
+                  return null;
+                })()}
+              </Space>
+            </Card>
           </div>
         )}
 
