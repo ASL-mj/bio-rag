@@ -259,29 +259,30 @@ export const Documents: React.FC = () => {
       overflow: 'auto'
     }}>
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <Card>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
-            <Title level={2} style={{ margin: 0 }}>文档管理</Title>
-            <Space>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
+          <Title level={2} style={{ margin: 0 }}>文档管理</Title>
+          <Space>
+            <Button
+              icon={<UploadOutlined />}
+              onClick={() => setBatchUploadModalVisible(true)}
+              size="large"
+            >
+              批量上传
+            </Button>
+            <Upload {...uploadProps}>
               <Button
+                type="primary"
                 icon={<UploadOutlined />}
-                onClick={() => setBatchUploadModalVisible(true)}
+                loading={uploading}
                 size="large"
               >
-                批量上传
+                上传文档
               </Button>
-              <Upload {...uploadProps}>
-                <Button
-                  type="primary"
-                  icon={<UploadOutlined />}
-                  loading={uploading}
-                  size="large"
-                >
-                  上传文档
-                </Button>
-              </Upload>
-            </Space>
-          </div>
+            </Upload>
+          </Space>
+        </div>
+        
+        <Card>
 
           {documents.length === 0 && !loading ? (
             <Empty
